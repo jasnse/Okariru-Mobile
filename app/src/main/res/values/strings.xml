@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Okariru</string>
+    <string name="title_activity_home_compose">HomeActivityCompose</string>
+
+    <string name="register_prompt">Belum punya akun? Register sekarang</string>
+
+</resources>
