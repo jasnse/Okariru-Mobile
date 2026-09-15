@@ -38,6 +38,18 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(profileUiState())
     val uiState: StateFlow<profileUiState> = _uiState.asStateFlow()
 
+    sealed class PopupState {
+        object Idle : PopupState()
+        data class Show(val isSuccess: Boolean, val message: String) : PopupState()
+    }
+
+    private val _popupState = MutableStateFlow<PopupState>(PopupState.Idle)
+    val popupState: StateFlow<PopupState> = _popupState.asStateFlow()
+
+    fun dismissPopup() {
+        _popupState.value = PopupState.Idle
+    }
+
     data class CustomerModel(
         val customerId: Int = 0,
         val items: List<CustomerDTO>,
@@ -109,10 +121,18 @@ class ProfileViewModel @Inject constructor(
                     val userId = authRepository.observeSession().firstOrNull()?.user?.id
                     if (userId != null) authRepository.refreshCustomer(userId)
                     _uiState.update { it.copy(isSubmitting = false, profileUpdated = true) }
+                    _popupState.value = PopupState.Show(
+                        isSuccess = true,
+                        message = "Profil berhasil diperbarui"
+                    )
                 }
-                is AppResult.Failure -> _uiState.update {
+                is AppResult.Failure -> {
                     Log.e("ProfileVM", "update gagal: ${result.failure}")
-                    it.copy(isSubmitting = false, errorMessage = "Gagal menyimpan profil")
+                    _uiState.update { it.copy(isSubmitting = false, errorMessage = "Gagal menyimpan profil") }
+                    _popupState.value = PopupState.Show(
+                        isSuccess = false,
+                        message = "Gagal menyimpan profil"
+                    )
                 }
             }
 

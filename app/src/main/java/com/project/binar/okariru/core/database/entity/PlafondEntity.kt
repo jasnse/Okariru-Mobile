@@ -25,7 +25,8 @@ import kotlin.time.Instant
 data class PlafondEntity(
     @PrimaryKey val plafondId: Int,
     val userId: Int, // Menghubungkan ke customer_id di tabel mst_customer
-    val totalPlafond: Int, // Sesuaikan tipe data dengan kebutuhan (Double/Int)
+    val totalPlafond: Int,
+    val sisaPlafond: Long?,
     val deskripsiPlafond: String?,
     val updatedAt: String?,
     val updatedBy: Int?,
@@ -37,6 +38,7 @@ fun PlafondEntity.toDTO(): PlafondDto = PlafondDto(
     plafondId = plafondId,
     userId = userId,
     totalPlafond = totalPlafond,
+    sisaPlafond = sisaPlafond,
     deskripsiPlafond = deskripsiPlafond,
     updatedAt = updatedAt,
     updatedBy = updatedBy,
@@ -48,6 +50,7 @@ fun PlafondDto.toEntity(): PlafondEntity = PlafondEntity(
     plafondId = plafondId,
     userId = userId,
     totalPlafond = totalPlafond,
+    sisaPlafond = sisaPlafond,
     deskripsiPlafond = deskripsiPlafond,
     updatedAt = updatedAt,
     updatedBy = updatedBy,

@@ -52,8 +52,6 @@ class RegisterViewModel @Inject constructor(
     private val registerRepository: RegisterRepository) : ViewModel() {
     val steps = listOf("Akun", "Personal", "Financial")
 
-
-
     private val _currentStep = MutableStateFlow(0)
     val currentStep: StateFlow<Int> = _currentStep.asStateFlow()
 
@@ -171,7 +169,7 @@ class RegisterViewModel @Inject constructor(
                     }
                     _uiState.value = RegisterUiState.Error(message)
                     _popupState.value = PopupState.Show(
-                        isSuccess = true,
+                        isSuccess = false,
                         message = "Register Gagal! Silahkan coba kembali."
                     )
                 }

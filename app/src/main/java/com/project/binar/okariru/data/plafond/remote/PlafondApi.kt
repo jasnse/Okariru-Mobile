@@ -7,7 +7,7 @@ import retrofit2.http.Query
 interface PlafondApi {
 
     @GET("/api/v1/plafond")
-    suspend fun getPlafond(@Query("userId") userId: Int): PlafondDto
+    suspend fun getPlafond(@Query("userId") userId: Int?): PlafondDto
 
 //    @GET("api/loan-product")
 //    suspend fun getLoanProducts(

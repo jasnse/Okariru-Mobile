@@ -62,6 +62,7 @@ import com.project.binar.okariru.data.auth.repository.AuthViewModel
 import com.project.binar.okariru.presentation.shared.component.AppDateTextField
 import com.project.binar.okariru.presentation.shared.component.AppDropdownField
 import com.project.binar.okariru.presentation.shared.component.AppTextField
+import com.project.binar.okariru.presentation.shared.component.StatusPopup
 import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.ui.theme.ColorOnSurfaceVariant
 import com.project.binar.okariru.ui.theme.ColorPrimary
@@ -79,10 +80,10 @@ fun editProfilePage(
     authViewModel: AuthViewModel = sharedActivityViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.profileUpdated) {
         if (uiState.profileUpdated) {
-            onProfileUpdated()
             viewModel.consumeProfileUpdatedEvent()
         }
     }
@@ -90,12 +91,29 @@ fun editProfilePage(
     EditProfileContent(
         uiState = uiState,
         onBackClick = onBackClick,
+        //pass ke viewmodel.updateProfile
         onSave = { sidName, alamat, pekerjaan, pendapatan, maritalStatus, noRekening, tempatLahir, tanggalLahir, gender ->
             viewModel.updateProfile(
                 sidName, alamat, pekerjaan, pendapatan,
                 maritalStatus, noRekening, tempatLahir, tanggalLahir, gender)
         }
     )
+
+    when (val state = popupState) {
+        is ProfileViewModel.PopupState.Show -> {
+            StatusPopup(
+                isSuccess = state.isSuccess,
+                message = state.message,
+                onDismiss = {
+                    viewModel.dismissPopup()
+                    if (state.isSuccess) onProfileUpdated()
+                }
+            )
+        }
+        ProfileViewModel.PopupState.Idle -> {
+            // Tidak melakukan apa-apa jika state idle
+        }
+    }
 }
 
 @Composable
@@ -149,9 +167,9 @@ fun EditProfileContent(
                 Spacer(modifier = Modifier.width(Spacing.md))
                 Text(
                     text = "Edit Profil",
-                    fontSize = 18.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -223,16 +241,16 @@ fun EditProfileContent(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     FieldSpacer()
-                    AppTextField(
-                        value = maritalStatus,
-                        onValueChange = { maritalStatus = it },
-                        label = "Status Pernikahan",
-                        leadingIcon = Icons.Filled.Groups
-                    )
+//                    AppTextField(
+//                        value = maritalStatus,
+//                        onValueChange = { maritalStatus = it },
+//                        label = "Status Pernikahan",
+//                        leadingIcon = Icons.Filled.Groups
+//                    )
                     AppDropdownField(
                         value = maritalStatus,
                         onValueChange = { maritalStatus = it },
-                        label = "Gender",
+                        label = "Marital Status",
                         leadingIcon = Icons.Filled.Groups,
                         options = listOf("Belum Kawin", "Kawin", "Cerai")
                     )
@@ -272,6 +290,7 @@ fun EditProfileContent(
                         Text("Simpan Perubahan")
                     }
                 }
+                
             }
         }
     }

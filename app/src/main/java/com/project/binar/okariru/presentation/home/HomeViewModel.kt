@@ -18,7 +18,7 @@ import javax.inject.Inject
 data class HomeUiState(
     val isLoading: Boolean = true,
     val userName: String = "Friend",
-    val totalPlafond: Int? = null,
+    val SisaPlafond: Long? = null,
     val errorMessage: String? = null,
 )
 
@@ -45,16 +45,12 @@ class HomeViewModel @Inject constructor(
 
     init {
 //        loadPlafondAndUsername()
-
         viewModelScope.launch {
             val session = authRepository.observeSession().firstOrNull()
             val userId = session?.user?.id
 
             _uiState.update { it.copy(userName = session?.user?.name ?: "Friend") }
 
-//            plafondRepository.observePlafond(userId).collect { plafond ->
-//                _uiState.update { it.copy(totalPlafond = plafond?.totalPlafond, isLoading = false) }
-//            }
 
             if (userId == null) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Sesi tidak ditemukan") }
@@ -69,7 +65,7 @@ class HomeViewModel @Inject constructor(
 
 
             plafondRepository.observePlafond(userId).collect { plafond ->
-                _uiState.update { it.copy(totalPlafond = plafond?.totalPlafond, isLoading = false) }
+                _uiState.update { it.copy(SisaPlafond = plafond?.sisaPlafond, isLoading = false) }
             }
         }
         //ini hit ke API
@@ -99,7 +95,7 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         userName = session.user.name,
-                        totalPlafond = result.data.totalPlafond,
+                        SisaPlafond = result.data.sisaPlafond,
                         errorMessage = null,
                     )
                 }

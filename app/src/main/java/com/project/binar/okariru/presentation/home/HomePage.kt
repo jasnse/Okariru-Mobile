@@ -50,7 +50,7 @@ fun HomePage(
     )
 }
 
-private fun formatRupiah(amount: Int): String =
+fun formatRupiah(amount: Long): String =
     "Rp " + NumberFormat.getNumberInstance(Locale("in", "ID")).format(amount)
 
 @Composable
@@ -81,7 +81,7 @@ private fun HomeContent(
                     Text(
                         text = when {
                             uiState.isLoading -> "Memuat..."
-                            uiState.totalPlafond != null -> ("Hello.. ${uiState.userName}" )
+                            uiState.SisaPlafond != null -> ("Hello.. ${uiState.userName}" )
                             else -> {"Failed"}
                         },
                         fontSize = 18.sp,
@@ -133,7 +133,7 @@ private fun HomeContent(
                         Text(
                             text = when {
                                 uiState.isLoading -> "Memuat..."
-                                uiState.totalPlafond != null -> formatRupiah(uiState.totalPlafond)
+                                uiState.SisaPlafond != null -> formatRupiah(uiState.SisaPlafond)
                                 else -> "Rp 0"
                             },
                             fontSize = 28.sp,
@@ -301,7 +301,7 @@ private fun HomeContent(
 fun HomePagePreview() {
     OkariruTheme {
         HomeContent(
-            uiState = HomeUiState(isLoading = false, totalPlafond = 67676767)
+            uiState = HomeUiState(isLoading = false, SisaPlafond = 67676767)
         )
     }
 }

@@ -21,7 +21,7 @@ class PlafondRepository internal constructor(
     private val dao: PlafondDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
-    suspend fun getPlafond(userId: Int): AppResult<PlafondDto> = withContext(ioDispatcher) {
+    suspend fun getPlafond(userId: Int?): AppResult<PlafondDto> = withContext(ioDispatcher) {
         runApiCatching(json) {
             api.getPlafond(userId).asAppResult()
         }

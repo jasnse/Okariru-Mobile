@@ -49,6 +49,7 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.project.binar.okariru.R
 import com.project.binar.okariru.data.auth.repository.AuthUiState
+import com.project.binar.okariru.presentation.Pinjaman.PengajuanPinjamanPage
 import com.project.binar.okariru.presentation.Pinjaman.pinjaman
 import com.project.binar.okariru.presentation.home.HomePage
 import com.project.binar.okariru.presentation.login.LoginPage
@@ -114,7 +115,8 @@ fun ExampleNavHost(
                     currentDestination?.hasRoute(RegisterRoute::class) == true ||
                     currentDestination?.hasRoute(ForgotPasswordRoute::class) == true ||
                     currentDestination?.hasRoute(OtpRoute::class) == true ||
-                    currentDestination?.hasRoute(ResetPasswordFormRoute::class) == true
+                    currentDestination?.hasRoute(ResetPasswordFormRoute::class) == true ||
+                    currentDestination?.hasRoute(EditProfileRoute::class) == true
 
             if (!isAuthRoute) {
                 Box(
@@ -183,11 +185,16 @@ fun ExampleNavHost(
                 authgraph(navController)
 
                 composable<HomeRoute> {
-                    HomePage()
+                    HomePage(
+                        onPinjamanClick = {navController.navigateToTab(TopLevelDestination.PINJAMAN)}
+                    )
                 }
 
                 composable<PinjamanRoute> {
-                    pinjaman()
+                    PengajuanPinjamanPage(
+                        onBackClick = { navController.navigateToTab(TopLevelDestination.HOME) },
+                        onSuccess = { navController.navigateToTab(TopLevelDestination.HOME) }
+                    )
                 }
 
                 composable<ProfileRoute> {
