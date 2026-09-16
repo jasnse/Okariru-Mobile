@@ -93,6 +93,9 @@ import android.Manifest
 import android.content.Context
 import android.provider.OpenableColumns
 import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.FileProvider
+import java.io.File
+import java.math.BigDecimal
 
 data class LoanTypeOption(
     val id: Int,
@@ -105,6 +108,7 @@ data class LoanTypeOption(
 data class LoanSimulation(
     val pokokPerBulan: Long,
     val bungaPerBulan: Long,
+    val biayaLainnya: Long,
     val totalPerBulan: Long,
     val totalPengembalian: Long,
 )
@@ -117,13 +121,14 @@ data class DocumentUploadItem(
     val fileName: String? = null,
 )
 
-private fun calculateSimulation(nominal: Int, tenor: Int, bungaPercent: Double): LoanSimulation {
-    if (tenor <= 0) return LoanSimulation(0, 0, 0, 0)
-    val pokok = nominal.toLong() / tenor
-    val bunga = (nominal * (bungaPercent / 100)).toLong()
-    val totalPerBulan = pokok + bunga
-    val totalPengembalian = totalPerBulan * tenor
-    return LoanSimulation(pokok, bunga, totalPerBulan, totalPengembalian)
+private fun calculateSimulation(nominal: Int, tenor: Int, bungaPercent: Double, biayaLainnya: Long): LoanSimulation {
+    if (tenor <= 0) return LoanSimulation(0, 0, 0, 0, 0)
+    val pokok = nominal.toLong() / tenor    //total angsuran POKOK bulan
+    val bunga = (nominal * (bungaPercent / 100)).toLong() //bunga perbulan
+    val biayaLainnyaPerBulan = biayaLainnya / tenor //biaya lainnya dicicil merata tiap bulan
+    val totalPerBulan = pokok + bunga + biayaLainnyaPerBulan //total angusran per bulan
+    val totalPengembalian = totalPerBulan * tenor //total seluruh utang, biaya lainnya sudah termasuk di totalPerBulan
+    return LoanSimulation(pokok, bunga, biayaLainnyaPerBulan, totalPerBulan, totalPengembalian)
 }
 
 fun getFileNameFromUri(context: Context, uri: Uri): String {
@@ -135,6 +140,12 @@ fun getFileNameFromUri(context: Context, uri: Uri): String {
         }
     }
     return fileName
+}
+
+fun createCaptureUri(context: Context): Uri {
+    val directory = File(context.cacheDir, "camera").apply { mkdirs() }
+    val file = File.createTempFile("capture_", ".jpg", directory)
+    return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 }
 
 
@@ -391,7 +402,8 @@ private fun StepSimulasi(
     val selected = loanTypes.firstOrNull { it.id == form.selectedLoanTypeId }
     val tenor = Regex("\\d+").find(form.tenor)?.value?.toIntOrNull() ?: 0
     val bungaPercent = selected?.bunga ?: 0.0
-    val simulation = calculateSimulation(nominal, tenor, bungaPercent)
+    val biayaLainnya = (selected?.biayaLainnya?: 0).toLong()
+    val simulation = calculateSimulation(nominal, tenor, bungaPercent, biayaLainnya)
     val bungaFormatted = "${bungaPercent}%"
 
 
@@ -457,6 +469,10 @@ private fun StepSimulasi(
             SimulationRow(
                 label = "Bunga / Bulan (${bungaFormatted})",
                 value = formatRupiah(simulation.bungaPerBulan)
+            )
+            SimulationRow(
+                label = "Biaya Lainnya",
+                value = formatRupiah(simulation.biayaLainnya)
             )
             HorizontalDivider(color = ColorOutline.copy(alpha = 0.3f))
             SimulationHighlightRow(

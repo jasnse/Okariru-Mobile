@@ -26,6 +26,7 @@ mockk = "1.14.11"
 androidxTestCore = "1.7.0"
 robolectric = "4.17"
 rules = "1.7.0"
+runtime = "1.12.1"
 
 
 [libraries]
@@ -73,6 +74,7 @@ androidx-test-core = { group = "androidx.test", name = "core", version.ref = "an
 okhttp-mockwebserver3 = { group = "com.squareup.okhttp3", name = "mockwebserver3", version.ref = "okhttp" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

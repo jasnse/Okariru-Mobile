@@ -38,7 +38,8 @@ fun HomePage(
     onPinjamanClick: () -> Unit = {},
     onPembayaranClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onStatusPinjamanClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     HomeContent(
@@ -47,10 +48,11 @@ fun HomePage(
         onPembayaranClick = onPembayaranClick,
         onProfileClick = onProfileClick,
         onNotificationClick = onNotificationClick,
+        onStatusPinjamanClick = onStatusPinjamanClick,
     )
 }
 
-fun formatRupiah(amount: Long): String =
+fun formatRupiah(amount: Number): String =
     "Rp " + NumberFormat.getNumberInstance(Locale("in", "ID")).format(amount)
 
 @Composable
@@ -59,7 +61,8 @@ private fun HomeContent(
     onPinjamanClick: () -> Unit = {},
     onPembayaranClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onStatusPinjamanClick: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -218,10 +221,10 @@ private fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     MainFeatureCard(
-                        title = "Ajukan Pinjaman",
+                        title = "Status Pinjaman",
                         icon = Icons.Filled.FactCheck,
                         modifier = Modifier.weight(1f),
-                        onClick = onPinjamanClick
+                        onClick = onStatusPinjamanClick
                     )
                     MainFeatureCard(
                         title = "Pembayaran",

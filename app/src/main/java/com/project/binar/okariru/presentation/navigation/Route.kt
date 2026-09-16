@@ -38,6 +38,12 @@ data object ProfileRoute : AppRoute
 @Serializable
 data object EditProfileRoute : AppRoute
 
+@Serializable
+data object StatusPinjamanRoute : AppRoute
+
+@Serializable
+data class DetailStatusPinjamanRoute(val transPinjamanId: Int) : AppRoute
+
 //@Serializable
 //data object PembayaranGraph : AppRoute
 @Serializable

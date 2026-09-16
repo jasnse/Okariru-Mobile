@@ -22,7 +22,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -82,6 +85,7 @@ class PinjamanViewModel @Inject constructor(
 
     init {
         loadLoanTypes()
+        observeSisaPlafond()
     }
 
     fun updateForm(update: (PinjamanFormState) -> PinjamanFormState) {
@@ -122,15 +126,14 @@ class PinjamanViewModel @Inject constructor(
     private fun defaultDocuments() = listOf(
         DocumentUploadItem(Icons.Filled.Badge, "KTP", isRequired = true),
         DocumentUploadItem(Icons.Filled.Payments, "Slip Gaji", isRequired = true),
-        DocumentUploadItem(Icons.Filled.Home, "Kartu Keluarga (KK)", isRequired = false),
-        DocumentUploadItem(Icons.Filled.AccountBalance, "Buku Tabungan / Rekening", isRequired = false),
-        DocumentUploadItem(Icons.Filled.Description, "Dokumen Lainnya", isRequired = false),
+        DocumentUploadItem(Icons.Filled.Home, "Kartu Keluarga (KK)", isRequired = true),
+        DocumentUploadItem(Icons.Filled.AccountBalance, "Buku Tabungan / Rekening", isRequired = true),
+        DocumentUploadItem(Icons.Filled.Description, "Dokumen Lainnya", isRequired = true),
     )
 
     private fun loadLoanTypes() {
         viewModelScope.launch {
             _isLoadingLoanTypes.value = true
-            val userId = authRepository.observeSession().firstOrNull()?.user?.id
             when (val result = pinjamanRepository.getLoanTypes()) {
                 is AppResult.Success -> {
                     _loanTypes.value = result.data.map { dto ->
@@ -147,16 +150,28 @@ class PinjamanViewModel @Inject constructor(
                     _uiState.value = PinjamanUiState.Error("Gagal memuat jenis pinjaman")
                 }
             }
-            when(val resultPlafond = plafondRepository.getPlafond(userId)){
-                is AppResult.Success -> {
-                    val plafondValue = resultPlafond.data.sisaPlafond
-                    _formState.update { currentState ->
-                        currentState.copy(sisaPlafond = plafondValue)
+            _isLoadingLoanTypes.value = false
+        }
+    }
+
+    // reaktif terhadap perubahan sesi, supaya sisaPlafond ikut ter-update kalau user ganti akun tanpa restart app
+    private fun observeSisaPlafond() {
+        viewModelScope.launch {
+            authRepository.observeSession()
+                .map { it?.user?.id }
+                .distinctUntilChanged()
+                .collectLatest { userId ->
+                    if (userId == null) return@collectLatest
+                    when (val resultPlafond = plafondRepository.getPlafond(userId)) {
+                        is AppResult.Success -> {
+                            val plafondValue = resultPlafond.data.sisaPlafond
+                            _formState.update { currentState ->
+                                currentState.copy(sisaPlafond = plafondValue)
+                            }
+                        }
+                        else -> {}
                     }
                 }
-                else -> {}
-            }
-            _isLoadingLoanTypes.value = false
         }
     }
 

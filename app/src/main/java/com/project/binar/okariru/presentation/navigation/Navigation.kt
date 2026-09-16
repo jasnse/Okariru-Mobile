@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -50,7 +52,6 @@ import androidx.navigation.toRoute
 import com.project.binar.okariru.R
 import com.project.binar.okariru.data.auth.repository.AuthUiState
 import com.project.binar.okariru.presentation.Pinjaman.PengajuanPinjamanPage
-import com.project.binar.okariru.presentation.Pinjaman.pinjaman
 import com.project.binar.okariru.presentation.home.HomePage
 import com.project.binar.okariru.presentation.login.LoginPage
 import com.project.binar.okariru.presentation.profile.ProfilePage
@@ -62,6 +63,10 @@ import com.project.binar.okariru.presentation.reset.otpPage
 import com.project.binar.okariru.presentation.shared.component.AppButton
 import com.project.binar.okariru.presentation.shared.component.AppButtonVariant
 import com.project.binar.okariru.presentation.shared.component.FloatingNavItem
+import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
+import com.project.binar.okariru.presentation.status_pinjaman.DaftarPengajuanPage
+import com.project.binar.okariru.presentation.status_pinjaman.StatusPengajuanDetailPage
+import com.project.binar.okariru.presentation.status_pinjaman.StatusPinjamanViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,7 +191,8 @@ fun ExampleNavHost(
 
                 composable<HomeRoute> {
                     HomePage(
-                        onPinjamanClick = {navController.navigateToTab(TopLevelDestination.PINJAMAN)}
+                        onPinjamanClick = {navController.navigateToTab(TopLevelDestination.PINJAMAN)},
+                        onStatusPinjamanClick = { navController.navigate(StatusPinjamanRoute) }
                     )
                 }
 
@@ -208,8 +214,38 @@ fun ExampleNavHost(
                 composable<EditProfileRoute> {
                     editProfilePage(
                         onBackClick = { navController.popBackStack() },
-                        onProfileUpdated = { navController.popBackStack() }
+                        onProfileUpdated = { navController.navigateToTab(TopLevelDestination.PROFILE) }
                     )
+                }
+
+                composable<StatusPinjamanRoute> {
+                    DaftarPengajuanPage(
+                        onBackClick = {navController.navigateToTab(TopLevelDestination.HOME)},
+                        onItemClick = {pinjaman -> navController.navigate(DetailStatusPinjamanRoute(pinjaman.transPinjamanId))}
+                    )
+                }
+
+                composable<DetailStatusPinjamanRoute> { sharedState ->
+                    val route = sharedState.toRoute<DetailStatusPinjamanRoute>()
+                    val viewModel: StatusPinjamanViewModel = sharedActivityViewModel()
+                    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                    val sharedItemData = uiState.items.firstOrNull { it.transPinjamanId == route.transPinjamanId }
+
+                    if (sharedItemData != null) {
+                        StatusPengajuanDetailPage(
+                            item = sharedItemData,
+                            modifier = Modifier.fillMaxSize(),
+                            onBackClick = { navController.popBackStack() }
+                        )
+                    } else {
+                        // Tampilkan indikator Loading atau Error State jika data belum ditemukan/loading
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
             }
         }
