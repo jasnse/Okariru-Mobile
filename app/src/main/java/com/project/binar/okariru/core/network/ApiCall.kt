@@ -49,7 +49,7 @@ private fun HttpException.toFailure(json: Json): CommonFailure {
     }.getOrNull()
 
     val error = parsed?.error
-        ?: return CommonFailure.ApiError(details = listOfNotNull(parsed?.message))
+        ?: return CommonFailure.ApiError(details = listOfNotNull(parsed?.message ?: body.takeIf { it.isNotBlank() }))
 
     return CommonFailure.ApiError(error.code, error.details)
 }

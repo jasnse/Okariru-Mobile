@@ -2,8 +2,7 @@ package com.project.binar.okariru.core.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.project.binar.okariru.data.plafond.dto.PlafondDto
-import com.project.binar.okariru.data.status_pinjaman.dto.listPinjamanDto
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import kotlin.time.Instant
 
 @Entity(tableName = "pinjaman_transaction")
@@ -27,7 +26,7 @@ data class StatusPinjamanEntity(
     val jenisPinjaman: String? = null,
 )
 
-fun StatusPinjamanEntity.toDTO(): listPinjamanDto = listPinjamanDto(
+fun StatusPinjamanEntity.toDTO(): ListPinjamanDto = ListPinjamanDto(
     transPinjamanId = transPinjamanId,
     kodeTransaksi = kodeTransaksi,
     customerId = customerId,
@@ -47,7 +46,7 @@ fun StatusPinjamanEntity.toDTO(): listPinjamanDto = listPinjamanDto(
     jenisPinjaman = jenisPinjaman
 )
 
-fun listPinjamanDto.toEntity(): StatusPinjamanEntity = StatusPinjamanEntity(
+fun ListPinjamanDto.toEntity(): StatusPinjamanEntity = StatusPinjamanEntity(
     transPinjamanId = transPinjamanId,
     kodeTransaksi = kodeTransaksi,
     customerId = customerId,

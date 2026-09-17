@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.binar.okariru.core.network.AppResult
 import com.project.binar.okariru.data.auth.repository.AuthRepository
-import com.project.binar.okariru.data.status_pinjaman.dto.listPinjamanDto
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.data.status_pinjaman.repository.StatusPinjamanRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 data class StatusPinjamanUiState(
     val isLoading: Boolean = true,
-    val items: List<listPinjamanDto> = emptyList(),
+    val items: List<ListPinjamanDto> = emptyList(),
     val errorMessage: String? = null,
 )
 @HiltViewModel

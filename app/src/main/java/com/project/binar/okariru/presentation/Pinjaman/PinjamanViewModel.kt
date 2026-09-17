@@ -232,6 +232,8 @@ class PinjamanViewModel @Inject constructor(
                     } else {
                         true
                     }
+                    //refresh nominal plafond di home
+                    plafondRepository.refreshPlafond(userId)
 
                     _uiState.value = PinjamanUiState.Success
                     _popupState.value = if (uploadOk) {

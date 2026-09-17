@@ -44,7 +44,11 @@ data object StatusPinjamanRoute : AppRoute
 @Serializable
 data class DetailStatusPinjamanRoute(val transPinjamanId: Int) : AppRoute
 
-//@Serializable
-//data object PembayaranGraph : AppRoute
 @Serializable
 data object PembayaranRoute : AppRoute
+
+@Serializable
+data class DetailAngsuranRoute(val transPinjamanId: Int) : AppRoute
+
+//@Serializable
+//data object PembayaranGraph : AppRoute

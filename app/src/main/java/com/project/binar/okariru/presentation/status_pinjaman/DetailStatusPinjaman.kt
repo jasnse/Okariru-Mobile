@@ -24,7 +24,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,8 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.project.binar.okariru.data.status_pinjaman.dto.listPinjamanDto
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.presentation.home.formatRupiah
+import com.project.binar.okariru.presentation.shared.component.StatusChip
 import com.project.binar.okariru.ui.theme.ColorOnPrimary
 import com.project.binar.okariru.ui.theme.ColorOnSurfaceVariant
 import com.project.binar.okariru.ui.theme.ColorOutline
@@ -47,7 +47,7 @@ import com.project.binar.okariru.ui.theme.Spacing
 
 @Composable
 fun StatusPengajuanDetailPage(
-    item: listPinjamanDto,
+    item: ListPinjamanDto,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
 ) {
@@ -187,12 +187,12 @@ private data class ProcessStep(
 
 
 //state untuk progress bar
-private fun buildProcessSteps(item: listPinjamanDto): List<ProcessStep> {
+private fun buildProcessSteps(item: ListPinjamanDto): List<ProcessStep> {
     val status = item.statusPengajuan?.lowercase()
 
     val terkirimDone = item.tanggalPengajuan != null
     val reviewDone = item.tanggalReview != null || status in listOf("direview", "disetujui", "ditolak")
-    val approvalDone = status in listOf("disetujui", "ditolak")
+    val approvalDone = status in listOf("dicairkan","disetujui", "ditolak")
     val approvalCurrent = status == "direview"
     val pencairanDone = status == "dicairkan"
 
@@ -319,7 +319,7 @@ private fun StepIndicator(state: StepState) {
 @Composable
 fun StatusPengajuanDetailPagePreview() {
 
-    val mockPinjaman = listPinjamanDto(
+    val mockPinjaman = ListPinjamanDto(
         kodeTransaksi = "LN-20231024-001",
         statusPengajuan = "direview", // "direview", "disetujui", "ditolak", "dicairkan"
         jenisPinjaman = "Pinjaman Multiguna",

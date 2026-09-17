@@ -1,15 +1,12 @@
 package com.project.binar.okariru.data.status_pinjaman.repository
 
-import com.project.binar.okariru.core.database.dao.PlafondDao
 import com.project.binar.okariru.core.database.dao.StatusPinjamanDao
 import com.project.binar.okariru.core.database.entity.toDTO
 import com.project.binar.okariru.core.database.entity.toEntity
 import com.project.binar.okariru.core.network.AppResult
 import com.project.binar.okariru.core.network.asAppResult
 import com.project.binar.okariru.core.network.runApiCatching
-import com.project.binar.okariru.data.plafond.dto.PlafondDto
-import com.project.binar.okariru.data.plafond.remote.PlafondApi
-import com.project.binar.okariru.data.status_pinjaman.dto.listPinjamanDto
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.data.status_pinjaman.remote.StatusPinjamanApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -25,13 +22,13 @@ class StatusPinjamanRepository internal constructor(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
-    suspend fun getListPinjaman(customerId: Int, status: String? = null, keyword: String? = null): AppResult<List<listPinjamanDto>> = withContext(ioDispatcher) {
+    suspend fun getListPinjaman(customerId: Int, status: String? = null, keyword: String? = null): AppResult<List<ListPinjamanDto>> = withContext(ioDispatcher) {
         runApiCatching(json) {
             api.getListPinjaman(customerId, status, keyword).asAppResult()
         }
     }
 
-    fun observeStatusPinjaman(customerId: Int): Flow<List<listPinjamanDto>> =
+    fun observeStatusPinjaman(customerId: Int): Flow<List<ListPinjamanDto>> =
         dao.observeList(customerId).map { list -> list.map { it.toDTO() } }
 
     suspend fun refreshStatusPinjaman(customerId: Int, status: String? = null, keyword: String? = null): AppResult<Unit> = withContext(ioDispatcher) {

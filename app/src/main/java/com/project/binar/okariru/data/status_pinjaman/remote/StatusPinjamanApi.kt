@@ -1,6 +1,6 @@
 package com.project.binar.okariru.data.status_pinjaman.remote
 
-import com.project.binar.okariru.data.status_pinjaman.dto.listPinjamanDto
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,7 +11,7 @@ interface StatusPinjamanApi {
         @Query("customerId") customerId: Int,
         @Query("status") status: String? = null,
         @Query("keyword") keyword: String? = null,
-    ): List<listPinjamanDto>
+    ): List<ListPinjamanDto>
 //    suspend fun getLoanProducts(
 //        @Query("page") page: Int,
 //        @Query("size") size: Int,

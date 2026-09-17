@@ -3,7 +3,7 @@ package com.project.binar.okariru.data.status_pinjaman.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class listPinjamanDto(
+data class ListPinjamanDto(
     val transPinjamanId: Int,
     val kodeTransaksi: String,
     val customerId: Int,

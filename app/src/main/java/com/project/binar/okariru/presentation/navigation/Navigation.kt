@@ -51,7 +51,10 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.project.binar.okariru.R
 import com.project.binar.okariru.data.auth.repository.AuthUiState
+import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.presentation.Pinjaman.PengajuanPinjamanPage
+import com.project.binar.okariru.presentation.angsuran.DaftarPengajuanAngsuranPage
+import com.project.binar.okariru.presentation.angsuran.RincianAngsuranPage
 import com.project.binar.okariru.presentation.home.HomePage
 import com.project.binar.okariru.presentation.login.LoginPage
 import com.project.binar.okariru.presentation.profile.ProfilePage
@@ -192,7 +195,8 @@ fun ExampleNavHost(
                 composable<HomeRoute> {
                     HomePage(
                         onPinjamanClick = {navController.navigateToTab(TopLevelDestination.PINJAMAN)},
-                        onStatusPinjamanClick = { navController.navigate(StatusPinjamanRoute) }
+                        onStatusPinjamanClick = { navController.navigate(StatusPinjamanRoute) },
+                        onPembayaranClick = { navController.navigate(PembayaranRoute) }
                     )
                 }
 
@@ -220,7 +224,7 @@ fun ExampleNavHost(
 
                 composable<StatusPinjamanRoute> {
                     DaftarPengajuanPage(
-                        onBackClick = {navController.navigateToTab(TopLevelDestination.HOME)},
+                        onBackClick = {navController.popBackStack()},
                         onItemClick = {pinjaman -> navController.navigate(DetailStatusPinjamanRoute(pinjaman.transPinjamanId))}
                     )
                 }
@@ -246,6 +250,20 @@ fun ExampleNavHost(
                             CircularProgressIndicator()
                         }
                     }
+                }
+
+                composable<PembayaranRoute> {
+                    DaftarPengajuanAngsuranPage(
+                        onBackClick = { navController.popBackStack() },
+                                onItemClick = {seeDetail: ListPinjamanDto -> navController.navigate(
+                                    DetailAngsuranRoute(seeDetail.transPinjamanId))}
+                    )
+                }
+
+                composable<DetailAngsuranRoute>() {
+                    RincianAngsuranPage(
+                        onBackClick = { navController.popBackStack() },
+                    )
                 }
             }
         }

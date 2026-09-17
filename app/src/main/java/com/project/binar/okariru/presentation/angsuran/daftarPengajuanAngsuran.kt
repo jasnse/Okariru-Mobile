@@ -1,5 +1,4 @@
-package com.project.binar.okariru.presentation.status_pinjaman
-
+package com.project.binar.okariru.presentation.angsuran
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,32 +40,37 @@ import com.project.binar.okariru.ui.theme.OkariruTheme
 import com.project.binar.okariru.ui.theme.Spacing
 
 @Composable
-fun DaftarPengajuanPage(
+fun DaftarPengajuanAngsuranPage(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onItemClick: (ListPinjamanDto) -> Unit = {},
-    viewModel: StatusPinjamanViewModel = sharedActivityViewModel(),
+    viewModel: AngsuranViewModel = sharedActivityViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.loadListPinjaman()
+        viewModel.getListPinjamanActive()
     }
 
-    DaftarPengajuanContent(
+    DaftarPengajuanAngsuranContent(
         modifier = modifier,
         items = uiState.items,
         onBackClick = onBackClick,
-        onItemClick = onItemClick,
+        onItemClick = { item ->
+            viewModel.selectPinjaman(item)
+            onItemClick(item)
+        },
+        onRetry = { viewModel.getListPinjamanActive() }
     )
 }
 
 @Composable
-fun DaftarPengajuanContent(
+fun DaftarPengajuanAngsuranContent(
     modifier: Modifier = Modifier,
     items: List<ListPinjamanDto> = emptyList(),
     onBackClick: () -> Unit = {},
     onItemClick: (ListPinjamanDto) -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -94,7 +98,7 @@ fun DaftarPengajuanContent(
             }
             Spacer(modifier = Modifier.width(Spacing.md))
             Text(
-                text = "Daftar Pengajuan",
+                text = "Daftar Pinjaman Aktif",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = ColorPrimary
@@ -103,7 +107,6 @@ fun DaftarPengajuanContent(
 
         Spacer(modifier = Modifier.height(Spacing.xl))
 
-        // List Pengajuan
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             contentPadding = PaddingValues(bottom = Spacing.xl)
@@ -118,14 +121,10 @@ fun DaftarPengajuanContent(
     }
 }
 
-
-
-
-
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDaftarPengajuanPage() {
-    val dummyData = listOf(
+fun DaftarPengajuanAngsuranContentPreview() {
+    val mockItems = listOf(
         ListPinjamanDto(
             transPinjamanId = 1,
             kodeTransaksi = "TRX-2026-00001",
@@ -134,31 +133,24 @@ private fun PreviewDaftarPengajuanPage() {
             pinjamanId = 1,
             nominalPinjaman = 5000000,
             tenor = 6,
-            statusPengajuan = "Direview"
+            statusPengajuan = "Dicairkan"
         ),
         ListPinjamanDto(
             transPinjamanId = 2,
-            kodeTransaksi = "TRX-2026-00002",
+            kodeTransaksi = "TRX-2026-00001",
             customerId = 1,
             customerName = "Budi Santoso",
             pinjamanId = 1,
-            nominalPinjaman = 25000000,
-            tenor = 12,
-            statusPengajuan = "Disetujui"
-        ),
-        ListPinjamanDto(
-            transPinjamanId = 3,
-            kodeTransaksi = "TRX-2026-00003",
-            customerId = 1,
-            customerName = "Budi Santoso",
-            pinjamanId = 2,
-            nominalPinjaman = 10000000,
-            tenor = 12,
-            statusPengajuan = "Ditolak"
+            nominalPinjaman = 5000000,
+            tenor = 6,
+            statusPengajuan = "Direview"
         )
     )
-
     OkariruTheme {
-        DaftarPengajuanContent(items = dummyData)
+        DaftarPengajuanAngsuranContent(
+            items = mockItems,
+            onBackClick = {},
+            onItemClick = {}
+        )
     }
 }
