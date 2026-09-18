@@ -4,12 +4,14 @@ package com.project.binar.okariru.data.auth.remote
 import com.project.binar.okariru.core.network.ApiEnvelope
 import com.project.binar.okariru.data.auth.dto.CustomerDTO
 import com.project.binar.okariru.data.auth.dto.CustomerUpdateRequestDto
+import com.project.binar.okariru.data.auth.dto.FcmTokenRequestDto
 import com.project.binar.okariru.data.auth.dto.LoginRequestDto
 import com.project.binar.okariru.data.auth.dto.LoginResponseDto
 import com.project.binar.okariru.data.auth.dto.RegisterRequest
 import com.project.binar.okariru.data.auth.dto.RegisterResponse
 import com.project.binar.okariru.data.plafond.dto.PlafondDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -30,4 +32,10 @@ interface AuthApi {
 
     @PUT("/api/v1/customer/me")
     suspend fun updateMyProfile(@Body body: CustomerUpdateRequestDto): String
+
+    @PUT("/api/v1/customer/fcm-token")
+    suspend fun updateFcmToken(@Body body: FcmTokenRequestDto): String
+
+    @DELETE("/api/v1/customer/fcm-token")
+    suspend fun clearFcmToken(): String
 }

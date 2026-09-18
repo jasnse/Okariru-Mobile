@@ -10,11 +10,13 @@ import com.project.binar.okariru.core.network.asAppResult
 import com.project.binar.okariru.core.network.map
 import com.project.binar.okariru.core.network.requirePayload
 import com.project.binar.okariru.core.network.runApiCatching
+import com.project.binar.okariru.core.notification.FcmLocalStore
 import com.project.binar.okariru.data.auth.local.AuthSessionLocalDataSource
 import com.project.binar.okariru.data.auth.dto.AuthSession
 import com.project.binar.okariru.data.auth.dto.AuthUser
 import com.project.binar.okariru.data.auth.dto.CustomerDTO
 import com.project.binar.okariru.data.auth.dto.CustomerUpdateRequestDto
+import com.project.binar.okariru.data.auth.dto.FcmTokenRequestDto
 import com.project.binar.okariru.data.auth.dto.LoginRequestDto
 import com.project.binar.okariru.data.auth.dto.LoginResponseDto
 import com.project.binar.okariru.data.auth.remote.AuthApi
@@ -27,8 +29,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
-// Masa berlaku sesi lokal -- dipakai supaya user
-// tidak perlu login ulang selama durasi ini
+// Masa berlaku sesi lokal -- dipakai supaya user -> tidak perlu login ulang selama durasi ini
 private val SESSION_TTL_MILLIS = TimeUnit.MINUTES.toMillis(60)
 
 class AuthRepository internal constructor(
@@ -37,6 +38,7 @@ class AuthRepository internal constructor(
 
     private val json: Json,
     private val dao: CustomerDao,
+    private val fcmLocalStore: FcmLocalStore,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
@@ -55,7 +57,12 @@ class AuthRepository internal constructor(
                         accessToken = payload.token,
                         expiresAtMillis = clock() + SESSION_TTL_MILLIS) }
                     .also { result ->
-                        if (result is AppResult.Success) localDataSource.save(result.data)
+                        if (result is AppResult.Success) {
+                            localDataSource.save(result.data)
+
+                            // pastikan FID device ini ke-assign ke customer yang baru login
+                            fcmLocalStore.get()?.let { fid -> updateFcmToken(fid) }
+                        }
                     }
             }
         }
@@ -81,8 +88,15 @@ class AuthRepository internal constructor(
         }
     }
 
+    suspend fun updateFcmToken(token: String): AppResult<String> = withContext(ioDispatcher) {
+        runApiCatching(json) {
+            apiHit.updateFcmToken(FcmTokenRequestDto(fcmToken = token)).asAppResult()
+        }
+    }
 
-    suspend fun logout(){
+
+    suspend fun logout() {
+        runCatching { apiHit.clearFcmToken() }
         localDataSource.clear()
     }
 }

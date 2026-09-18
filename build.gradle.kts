@@ -7,5 +7,7 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
-    id("com.google.gms.google-services") version "4.5.0" apply false
+
+    alias(libs.plugins.google.services) apply false
+
 }

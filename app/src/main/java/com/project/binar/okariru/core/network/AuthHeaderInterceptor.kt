@@ -6,7 +6,7 @@ import okhttp3.Response
 
 private const val HEADER_AUTHORIZATION = "Authorization"
 
-// Prefix path yang di backend di-permitAll() untuk method POST (lihat SecurityConfig#securityFilterChain).
+// Prefix path yang di backend di-permitAll() untuk method POST.
 // Token lama/invalid tidak boleh ditempel ke endpoint ini, backend bisa menolaknya dengan 401.
 private val PUBLIC_POST_PATH_PREFIXES = listOf(
     "/api/v1/login/",

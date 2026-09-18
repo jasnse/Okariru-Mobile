@@ -34,3 +34,8 @@ data class CustomerUpdateRequestDto(
     val tanggalLahir: String,
     val gender: String,
 )
+
+@Serializable
+data class FcmTokenRequestDto(
+    val fcmToken: String,
+)

@@ -4,4 +4,12 @@
 
     <string name="register_prompt">Belum punya akun? Register sekarang</string>
 
+    <!-- Notifikasi -->
+    <string name="notification_channel_general">Umum</string>
+    <string name="notification_channel_transaction">Transaksi</string>
+    <string name="notification_channel_promo">Promo</string>
+    <string name="notification_manual_action">Kirim Notifikasi Uji</string>
+    <string name="notification_manual_title">Pengajuan disetujui</string>
+    <string name="notification_manual_body">Ketuk untuk melihat detail transaksi TRX-001.</string>
+
 </resources>

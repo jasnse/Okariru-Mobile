@@ -21,12 +21,16 @@ coil = "3.6.2"
 lifecycle = "2.11.0"
 kotlinxSerializationJson = "1.11.0"
 material3 = "1.4.0"
+coreSplashscreen = "1.0.1"
 
 mockk = "1.14.11"
 androidxTestCore = "1.7.0"
 robolectric = "4.17"
 rules = "1.7.0"
 runtime = "1.12.1"
+
+googleServices = "4.5.0"
+firebaseBom = "34.19.0"
 
 
 [libraries]
@@ -76,6 +80,12 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines" }
+
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -83,4 +93,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 

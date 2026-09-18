@@ -2,6 +2,7 @@ package com.project.binar.okariru.di
 
 import android.content.Context
 import com.project.binar.okariru.core.database.dao.CustomerDao
+import com.project.binar.okariru.core.notification.FcmLocalStore
 import com.project.binar.okariru.data.auth.local.AuthSessionLocalDataSource
 import com.project.binar.okariru.data.auth.remote.AuthApi
 import com.project.binar.okariru.data.auth.repository.AuthRepository
@@ -25,16 +26,24 @@ object AuthModule {
 
     @Provides
     @Singleton
+    fun provideFcmLocalStore(
+        @ApplicationContext context: Context,
+    ): FcmLocalStore = FcmLocalStore(context)
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(
         localDataSource: AuthSessionLocalDataSource,
         authApi: AuthApi,
         json: Json,
         dao: CustomerDao,
+        fcmLocalStore: FcmLocalStore,
     ): AuthRepository = AuthRepository(
         localDataSource = localDataSource,
         apiHit = authApi,
         json = json,
         dao = dao,
+        fcmLocalStore = fcmLocalStore,
     )
 
     @Provides

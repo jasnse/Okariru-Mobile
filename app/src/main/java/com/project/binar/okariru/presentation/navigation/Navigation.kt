@@ -30,7 +30,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -70,18 +73,40 @@ import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.presentation.status_pinjaman.DaftarPengajuanPage
 import com.project.binar.okariru.presentation.status_pinjaman.StatusPengajuanDetailPage
 import com.project.binar.okariru.presentation.status_pinjaman.StatusPinjamanViewModel
+import android.net.Uri
+import com.project.binar.okariru.presentation.splash_screen.SplashContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExampleNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    authState: AuthUiState
+    authState: AuthUiState,
+    pendingDeepLink: Uri? = null,
+    onDeepLinkHandled: () -> Unit = {},
 ) {
     val destinations = remember { TopLevelDestination.entries }
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
     val currentTab = destinations.firstOrNull { destination ->
         currentDestination?.hasRoute(destination.route::class) == true
+    }
+
+    // Jeda splash screen ke login page
+    var minSplashElapsed by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(2575)
+        minSplashElapsed = true
+    }
+
+    // NavHost selalu mulai dari AuthGraph (netral) -- begitu sesi selesai di-restore dan
+    // ternyata user memang sudah login, pindahin ke Home sekali di sini
+    LaunchedEffect(authState.isRestoringSession) {
+        if (authState.isRestoringSession) return@LaunchedEffect
+        if (authState.isLoggedIn) {
+            navController.navigate(HomeRoute) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
     }
 
     // kalau sesi habis di tengah2 -> langsung ke login screen (logout otomatis)
@@ -99,6 +124,21 @@ fun ExampleNavHost(
                 popUpTo(0) { inclusive = true }
             }
         }
+    }
+
+    // tangani deep link dari tap notifikasi push, contoh "okariru://status-pinjaman/123"
+    LaunchedEffect(pendingDeepLink, authState.isLoggedIn, authState.isRestoringSession) {
+        val uri = pendingDeepLink ?: return@LaunchedEffect
+        if (authState.isRestoringSession || !authState.isLoggedIn) return@LaunchedEffect
+
+        val transPinjamanId = uri.takeIf { it.host == "status-pinjaman" }
+            ?.lastPathSegment
+            ?.toIntOrNull()
+
+        if (transPinjamanId != null) {
+            navController.navigate(DetailStatusPinjamanRoute(transPinjamanId))
+        }
+        onDeepLinkHandled()
     }
 
     Scaffold(
@@ -119,7 +159,8 @@ fun ExampleNavHost(
 //            )
 //        },
         bottomBar = {
-            val isAuthRoute = currentDestination?.hasRoute(LoginRoute::class) == true ||
+            val isAuthRoute = authState.isRestoringSession || !minSplashElapsed ||
+                    currentDestination?.hasRoute(LoginRoute::class) == true ||
                     currentDestination?.hasRoute(RegisterRoute::class) == true ||
                     currentDestination?.hasRoute(ForgotPasswordRoute::class) == true ||
                     currentDestination?.hasRoute(OtpRoute::class) == true ||
@@ -170,22 +211,17 @@ fun ExampleNavHost(
 
         },
            ) { innerPadding ->
-        if (authState.isRestoringSession) {
-            // Tunggu sesi tersimpan selesai dibaca dulu, supaya startDestination di bawah
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
+        // NavHost selalu di-mount dari awal (startDestination netral ke AuthGraph) supaya
+        // navController.setGraph() langsung terpanggil di frame pertama -- kalau NavHost baru
+        // dipasang belakangan (setelah splash selesai), currentBackStackEntryAsState() di atas
+        // sempat dipanggil sebelum ada graph sama sekali, dan itu yang bikin crash
+        // "You must call setGraph() before calling getGraph()".
+        // Begitu tau status login yang beneran (restore sesi kelar), LaunchedEffect di bawah
+        // yang redirect ke Home kalau ternyata sudah login.
+        Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
-                startDestination = remember {
-                    if (authState.isLoggedIn) HomeRoute else AuthGraph
-                },
+                startDestination = AuthGraph,
                 modifier = Modifier.padding(innerPadding),
                 enterTransition = { fadeIn(tween(220)) },
                 exitTransition = { fadeOut(tween(180)) }
@@ -264,6 +300,18 @@ fun ExampleNavHost(
                     RincianAngsuranPage(
                         onBackClick = { navController.popBackStack() },
                     )
+                }
+            }
+
+            if (authState.isRestoringSession || !minSplashElapsed) {
+                // nutup NavHost yang di belakang selama splash masih tampil
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SplashContent()
                 }
             }
         }
