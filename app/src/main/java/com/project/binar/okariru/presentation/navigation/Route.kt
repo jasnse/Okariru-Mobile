@@ -3,7 +3,7 @@ package com.project.binar.okariru.presentation.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HomeGraph : AppRoute
+data object LandingRoute : AppRoute
 
 @Serializable
 data object HomeRoute : AppRoute

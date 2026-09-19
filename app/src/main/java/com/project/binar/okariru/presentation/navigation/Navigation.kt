@@ -74,6 +74,7 @@ import com.project.binar.okariru.presentation.status_pinjaman.DaftarPengajuanPag
 import com.project.binar.okariru.presentation.status_pinjaman.StatusPengajuanDetailPage
 import com.project.binar.okariru.presentation.status_pinjaman.StatusPinjamanViewModel
 import android.net.Uri
+import com.project.binar.okariru.presentation.landing_page.HomeContentUnauthenticated
 import com.project.binar.okariru.presentation.splash_screen.SplashContent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -322,7 +323,15 @@ fun ExampleNavHost(
 
 
 fun NavGraphBuilder.authgraph(navController: NavHostController) {
-    navigation<AuthGraph>(startDestination = LoginRoute) {
+    navigation<AuthGraph>(startDestination = LandingRoute) {
+
+        composable<LandingRoute> {
+            HomeContentUnauthenticated (
+                goToLogin = {
+                    navController.navigate(LoginRoute)
+                }
+            )
+        }
 
         composable<LoginRoute> {
             LoginPage(

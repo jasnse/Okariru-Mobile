@@ -1,19 +1,40 @@
-package com.project.binar.okariru.presentation.home
+package com.project.binar.okariru.presentation.landing_page
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.FactCheck
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,46 +44,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.project.binar.okariru.presentation.shared.component.FloatingNavItem
 import com.project.binar.okariru.presentation.shared.component.MainFeatureCard
 import com.project.binar.okariru.presentation.shared.component.PromoCard
 import com.project.binar.okariru.ui.theme.OkariruTheme
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
-fun HomePage(
-    viewModel: HomeViewModel = hiltViewModel(),
-    onPinjamanClick: () -> Unit = {},
-    onPembayaranClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {},
-    onStatusPinjamanClick: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeContent(
-        uiState = uiState,
-        onPinjamanClick = onPinjamanClick,
-        onPembayaranClick = onPembayaranClick,
-        onProfileClick = onProfileClick,
-        onNotificationClick = onNotificationClick,
-        onStatusPinjamanClick = onStatusPinjamanClick,
-    )
-}
-
-fun formatRupiah(amount: Number): String =
-    "Rp " + NumberFormat.getNumberInstance(Locale("in", "ID")).format(amount)
-
-@Composable
-private fun HomeContent(
-    uiState: HomeUiState,
-    onPinjamanClick: () -> Unit = {},
-    onPembayaranClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {},
-    onStatusPinjamanClick: () -> Unit = {},
+fun HomeContentUnauthenticated(
+    goToLogin: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -72,7 +60,7 @@ private fun HomeContent(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // --- TOP APP BAR ---
+            // --- TOP
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,19 +68,32 @@ private fun HomeContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Column {
                     Text(
-                        text = when {
-                            uiState.isLoading -> "Memuat..."
-                            uiState.SisaPlafond != null -> ("Hello.. ${uiState.userName}" )
-                            else -> {"Failed"}
-                        },
+                        text = "Selamat Datang!",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    Text(
+                        text = "Masuk untuk menikmati akses lengkap",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
+                // Tombol Masuk Cepat
+                Button(
+                    onClick = goToLogin,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(
+                        text = "Masuk",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
 
             Column(
@@ -101,7 +102,7 @@ private fun HomeContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
             ) {
-                // --- PLAFON PINJAMAN ---
+                // --- KARTU INFORMASI PLAFON (PLACEHOLDER) ---
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -114,7 +115,7 @@ private fun HomeContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "PLAFON PINJAMAN ANDA",
+                                text = "ESTIMASI PLAFON MAKSIMAL",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
@@ -126,31 +127,34 @@ private fun HomeContent(
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        // Nilai estimasi limit pinjaman contoh
                         Text(
-                            text = when {
-                                uiState.isLoading -> "Memuat..."
-                                uiState.SisaPlafond != null -> formatRupiah(uiState.SisaPlafond)
-                                else -> "Rp 0"
-                            },
-                            fontSize = 28.sp,
+                            text = "Hingga Rp 10.000.000",
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
+                        Text(
+                            text = "Daftar sekarang dan dapatkan pencairan instan",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // --- KARTU AJUKAN PINJAMAN ---
+                // --- KARTU AJUKAN PINJAMAN (MENGARAHKAN KE LOGIN/REGISTER) ---
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
-                            onClick = onPinjamanClick
+                            onClick = goToLogin
                         ),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -217,13 +221,13 @@ private fun HomeContent(
                         title = "Status Pinjaman",
                         icon = Icons.Filled.FactCheck,
                         modifier = Modifier.weight(1f),
-                        onClick = onStatusPinjamanClick
+                        onClick = goToLogin
                     )
                     MainFeatureCard(
                         title = "Pembayaran",
                         icon = Icons.Filled.History,
                         modifier = Modifier.weight(1f),
-                        onClick = onPembayaranClick
+                        onClick = goToLogin
                     )
                 }
 
@@ -244,7 +248,8 @@ private fun HomeContent(
                     Text(
                         text = "Lihat Semua",
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable { goToLogin() }
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -282,22 +287,18 @@ private fun HomeContent(
                     )
                 }
 
-                // Ruang kosong supaya konten terakhir tidak tertutup kartu navigasi mengambang
                 Spacer(modifier = Modifier.height(96.dp))
             }
         }
-
-
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun HomePagePreview() {
     OkariruTheme {
-        HomeContent(
-            uiState = HomeUiState(isLoading = false, SisaPlafond = 67676767)
+        HomeContentUnauthenticated(
+
         )
     }
 }
