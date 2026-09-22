@@ -97,10 +97,15 @@ fun RincianAngsuranPage(
     val totalOutstanding = uiState.angsuranList.sumOf { it.sisaTagihan }
 
     if (uiState.paySuccessMessage != null) {
+        val wasLunas = uiState.isLunas
         StatusPopup(
             isSuccess = true,
             message = uiState.paySuccessMessage ?: "",
-            onDismiss = { viewModel.dismissPaySuccessMessage() }
+            onDismiss = {
+                viewModel.dismissPaySuccessMessage()
+                // baru redirect balik SETELAH popup ditutup
+                if (wasLunas) onBackClick()
+            }
         )
     }
 

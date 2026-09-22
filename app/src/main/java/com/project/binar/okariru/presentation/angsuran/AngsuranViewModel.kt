@@ -8,6 +8,7 @@ import com.project.binar.okariru.data.angsuran.dto.AngsuranDto
 import com.project.binar.okariru.data.angsuran.repository.AngsuranRepository
 import com.project.binar.okariru.data.auth.repository.AuthRepository
 import com.project.binar.okariru.data.pinjaman.repository.PinjamanRepository
+import com.project.binar.okariru.data.plafond.repository.PlafondRepository
 import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.data.status_pinjaman.repository.StatusPinjamanRepository
 import com.project.binar.okariru.presentation.home.formatRupiah
@@ -30,6 +31,7 @@ data class AngsuranUiState(
     val detailErrorMessage: String? = null,
     val isPaying: Boolean = false,
     val paySuccessMessage: String? = null,
+    val isLunas: Boolean = false,
     val bungaRate: Double? = null,
     val jenisPinjaman: String? = "",
     val selectedPinjaman: ListPinjamanDto? = null,
@@ -41,6 +43,7 @@ class AngsuranViewModel @Inject constructor(
     private val statusPinjamanRepository: StatusPinjamanRepository,
     private val authRepository: AuthRepository,
     private val pinjamanRepository: PinjamanRepository,
+    private val plafondRepository: PlafondRepository,
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(AngsuranUiState())
@@ -103,12 +106,27 @@ class AngsuranViewModel @Inject constructor(
                     when (val refreshed = angsuranRepository.getAngsuranForCustomer(transPinjamanId)) {
                         is AppResult.Success -> {
                             val sisaTagihan = refreshed.data.sumOf { it.sisaTagihan }
+                            val lunas = refreshed.data.isNotEmpty() && refreshed.data.all { it.statusAngsuran == "Lunas" }
+
+                            if (lunas) {
+                                // refresh plafond biar sisa plafond yang balik kebuka gara-gara lunas langsung update
+                                val userId = authRepository.observeSession().firstOrNull()?.user?.id
+                                if (userId != null) {
+                                    plafondRepository.refreshPlafond(userId)
+                                }
+                            }
+
                             _uiState.update {
                                 it.copy(
                                     isPaying = false,
                                     angsuranList = refreshed.data,
-                                    paySuccessMessage = "Berhasil bayar sebesar ${formatRupiah(nominalBayar)}. " +
-                                        "Sisa tagihan keseluruhan adalah ${formatRupiah(sisaTagihan)}."
+                                    isLunas = lunas,
+                                    paySuccessMessage = if (lunas) {
+                                        "Selamat! Pinjaman kamu sudah lunas."
+                                    } else {
+                                        "Berhasil bayar sebesar ${formatRupiah(nominalBayar)}. " +
+                                            "Sisa tagihan keseluruhan adalah ${formatRupiah(sisaTagihan)}."
+                                    }
                                 )
                             }
                         }
@@ -127,6 +145,6 @@ class AngsuranViewModel @Inject constructor(
     }
 
     fun dismissPaySuccessMessage() {
-        _uiState.update { it.copy(paySuccessMessage = null) }
+        _uiState.update { it.copy(paySuccessMessage = null, isLunas = false) }
     }
 }

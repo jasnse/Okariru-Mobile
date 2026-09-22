@@ -187,7 +187,7 @@ private fun NoDataYet(
             Spacer(modifier = Modifier.height(Spacing.xs))
 
             Text(
-                text = "Anda belum memiliki riwatan atau daftar angsuran aktif saat ini.",
+                text = "Anda belum memiliki daftar angsuran aktif saat ini.",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
