@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -56,9 +57,28 @@ fun AppDateTextField(
         }
     }
 
+    val maxDateMillis = remember {
+        LocalDate.now()
+            .atTime(23, 59, 59)
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+
+    }
+
     //saat ui ke reset -> pilihan tanggal gak ikut ke reset juga
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialSelectedDateMillis_conv
+        initialSelectedDateMillis = initialSelectedDateMillis_conv,
+
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= maxDateMillis
+            }
+
+            override fun isSelectableYear(utcTimeYear: Int): Boolean {
+                return utcTimeYear <= LocalDate.now().year
+            }
+        }
     )
 
     Box(modifier = modifier.fillMaxWidth()) {

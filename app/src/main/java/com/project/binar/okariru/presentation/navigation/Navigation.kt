@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +40,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -69,10 +67,8 @@ import com.project.binar.okariru.presentation.reset.otpPage
 import com.project.binar.okariru.presentation.shared.component.AppButton
 import com.project.binar.okariru.presentation.shared.component.AppButtonVariant
 import com.project.binar.okariru.presentation.shared.component.FloatingNavItem
-import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.presentation.status_pinjaman.DaftarPengajuanPage
 import com.project.binar.okariru.presentation.status_pinjaman.StatusPengajuanDetailPage
-import com.project.binar.okariru.presentation.status_pinjaman.StatusPinjamanViewModel
 import android.net.Uri
 import com.project.binar.okariru.presentation.landing_page.HomeContentUnauthenticated
 import com.project.binar.okariru.presentation.splash_screen.SplashContent
@@ -118,7 +114,8 @@ fun ExampleNavHost(
                 currentDestination?.hasRoute(RegisterRoute::class) == true ||
                 currentDestination?.hasRoute(ForgotPasswordRoute::class) == true ||
                 currentDestination?.hasRoute(OtpRoute::class) == true ||
-                currentDestination?.hasRoute(ResetPasswordFormRoute::class) == true
+                currentDestination?.hasRoute(ResetPasswordFormRoute::class) == true ||
+                currentDestination?.hasRoute(LandingRoute::class) == true
 
         if (!alreadyOnAuthRoute) {
             navController.navigate(AuthGraph) {
@@ -160,15 +157,21 @@ fun ExampleNavHost(
 //            )
 //        },
         bottomBar = {
-            val isAuthRoute = authState.isRestoringSession || !minSplashElapsed ||
+            val exclude = authState.isRestoringSession || !minSplashElapsed ||
                     currentDestination?.hasRoute(LoginRoute::class) == true ||
                     currentDestination?.hasRoute(RegisterRoute::class) == true ||
                     currentDestination?.hasRoute(ForgotPasswordRoute::class) == true ||
                     currentDestination?.hasRoute(OtpRoute::class) == true ||
                     currentDestination?.hasRoute(ResetPasswordFormRoute::class) == true ||
-                    currentDestination?.hasRoute(EditProfileRoute::class) == true
+                    currentDestination?.hasRoute(EditProfileRoute::class) == true ||
+                    currentDestination?.hasRoute(LandingRoute::class) == true ||
 
-            if (!isAuthRoute) {
+                    currentDestination?.hasRoute(StatusPinjamanRoute::class) == true||
+                    currentDestination?.hasRoute(DetailStatusPinjamanRoute::class) == true||
+                    currentDestination?.hasRoute(PembayaranRoute::class) == true||
+                    currentDestination?.hasRoute(DetailAngsuranRoute::class) == true
+
+            if (!exclude) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -212,13 +215,6 @@ fun ExampleNavHost(
 
         },
            ) { innerPadding ->
-        // NavHost selalu di-mount dari awal (startDestination netral ke AuthGraph) supaya
-        // navController.setGraph() langsung terpanggil di frame pertama -- kalau NavHost baru
-        // dipasang belakangan (setelah splash selesai), currentBackStackEntryAsState() di atas
-        // sempat dipanggil sebelum ada graph sama sekali, dan itu yang bikin crash
-        // "You must call setGraph() before calling getGraph()".
-        // Begitu tau status login yang beneran (restore sesi kelar), LaunchedEffect di bawah
-        // yang redirect ke Home kalau ternyata sudah login.
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
@@ -266,27 +262,13 @@ fun ExampleNavHost(
                     )
                 }
 
-                composable<DetailStatusPinjamanRoute> { sharedState ->
-                    val route = sharedState.toRoute<DetailStatusPinjamanRoute>()
-                    val viewModel: StatusPinjamanViewModel = sharedActivityViewModel()
-                    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-                    val sharedItemData = uiState.items.firstOrNull { it.transPinjamanId == route.transPinjamanId }
-
-                    if (sharedItemData != null) {
-                        StatusPengajuanDetailPage(
-                            item = sharedItemData,
-                            modifier = Modifier.fillMaxSize(),
-                            onBackClick = { navController.popBackStack() }
-                        )
-                    } else {
-                        // Tampilkan indikator Loading atau Error State jika data belum ditemukan/loading
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
+                composable<DetailStatusPinjamanRoute> { backStackEntry ->
+                    val route = backStackEntry.toRoute<DetailStatusPinjamanRoute>()
+                    StatusPengajuanDetailPage(
+                        transPinjamanId = route.transPinjamanId,
+                        modifier = Modifier.fillMaxSize(),
+                        onBackClick = { navController.popBackStack() }
+                    )
                 }
 
                 composable<PembayaranRoute> {

@@ -7,6 +7,29 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Diperlukan agar RootChecker bisa mendeteksi aplikasi root management
+         (Magisk, SuperSU, dsb) meskipun terinstal — Android 11+ menyembunyikan
+         paket lain dari PackageManager kecuali dideklarasikan di sini. -->
+    <queries>
+        <package android:name="com.topjohnwu.magisk" />
+        <package android:name="com.noshufou.android.su" />
+        <package android:name="com.noshufou.android.su.elite" />
+        <package android:name="eu.chainfire.supersu" />
+        <package android:name="com.koushikdutta.superuser" />
+        <package android:name="com.thirdparty.superuser" />
+        <package android:name="com.yellowes.su" />
+        <package android:name="com.kingroot.kinguser" />
+        <package android:name="com.kingouser.com" />
+        <package android:name="com.smedialink.oneclickroot" />
+        <package android:name="com.zhiqupk.root.global" />
+        <package android:name="com.alephzain.framaroot" />
+        <package android:name="com.devadvance.rootcloak" />
+        <package android:name="com.devadvance.rootcloakplus" />
+        <package android:name="com.amphoras.hidemyroot" />
+        <package android:name="com.formyhm.hiderootPremium" />
+        <package android:name="com.saurik.substrate" />
+    </queries>
+
     <application
         android:name=".OkariruApplication"
         android:allowBackup="true"

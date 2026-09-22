@@ -20,12 +20,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,9 +36,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.binar.okariru.data.status_pinjaman.dto.ListPinjamanDto
 import com.project.binar.okariru.presentation.home.formatRupiah
 import com.project.binar.okariru.presentation.shared.component.StatusChip
+import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.ui.theme.ColorOnPrimary
 import com.project.binar.okariru.ui.theme.ColorOnSurfaceVariant
 import com.project.binar.okariru.ui.theme.ColorOutline
@@ -47,6 +51,33 @@ import com.project.binar.okariru.ui.theme.Spacing
 
 @Composable
 fun StatusPengajuanDetailPage(
+    transPinjamanId: Int,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    viewModel: StatusPinjamanViewModel = sharedActivityViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val item = uiState.items.firstOrNull { it.transPinjamanId == transPinjamanId }
+
+    if (item != null) {
+        StatusPengajuanDetailContent(
+            item = item,
+            modifier = modifier,
+            onBackClick = onBackClick,
+        )
+    } else {
+        // data belum ke-load / belum ditemukan
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+fun StatusPengajuanDetailContent(
     item: ListPinjamanDto,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -339,7 +370,7 @@ fun StatusPengajuanDetailPagePreview() {
         lastUpdateBy = null,
     )
     OkariruTheme {
-        StatusPengajuanDetailPage(
+        StatusPengajuanDetailContent(
             item = mockPinjaman,
             onBackClick = {}
         )

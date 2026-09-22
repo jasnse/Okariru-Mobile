@@ -94,6 +94,11 @@ class LoginScreenUiTest {
 
         @Test
         fun openMainScreenWhenLogginInWithDebugCredential(){
+            // Landing -> Login (AuthGraph sekarang mulai dari LandingRoute, bukan langsung LoginRoute)
+            composeRule.awaitText("Masuk")
+            pause()
+            composeRule.onNodeWithText("Masuk").performClick()
+
             composeRule.awaitText("Sign In")
             pause()
 

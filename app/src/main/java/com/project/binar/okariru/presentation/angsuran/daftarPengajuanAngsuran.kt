@@ -2,6 +2,7 @@ package com.project.binar.okariru.presentation.angsuran
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,8 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.AssignmentLate
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -107,19 +113,89 @@ fun DaftarPengajuanAngsuranContent(
 
         Spacer(modifier = Modifier.height(Spacing.xl))
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
-            contentPadding = PaddingValues(bottom = Spacing.xl)
+        if(items.isEmpty()){
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                NoDataYet()
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+                contentPadding = PaddingValues(bottom = Spacing.xl)
+            ) {
+                items(items, key = { it.transPinjamanId }) { item ->
+                    PengajuanCard(
+                        item = item,
+                        onClick = { onItemClick(item) }
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+private fun NoDataYet(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.md),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 32.dp, horizontal = Spacing.lg),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            items(items, key = { it.transPinjamanId }) { item ->
-                PengajuanCard(
-                    item = item,
-                    onClick = { onItemClick(item) }
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .background(
+                        color = ColorPrimary.copy(alpha = 0.1f),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.AssignmentLate,
+                    contentDescription = null,
+                    modifier = Modifier.size(36.dp),
+                    tint = ColorPrimary
                 )
             }
+
+            Spacer(modifier = Modifier.height(Spacing.lg))
+
+            Text(
+                text = "Belum Ada Angsuran",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.xs))
+
+            Text(
+                text = "Anda belum memiliki riwatan atau daftar angsuran aktif saat ini.",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -115,7 +116,6 @@ fun RegisterPage(
                 fontSize = 13.sp,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            LaunchedEffectOnSuccess(onRegisterSuccess)
         }
 
         Row(
@@ -176,13 +176,6 @@ fun RegisterPage(
 }
 
 @Composable
-private fun LaunchedEffectOnSuccess(onSuccess: () -> Unit) {
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        onSuccess()
-    }
-}
-
-@Composable
 private fun StepAkun(
     form: RegisterFormState,
     update: ((RegisterFormState) -> RegisterFormState) -> Unit
@@ -192,14 +185,16 @@ private fun StepAkun(
             value = form.userName,
             onValueChange = { v -> update { it.copy(userName = v) } },
             label = "Username",
-            leadingIcon = Icons.Filled.Person
+            leadingIcon = Icons.Filled.Person,
+            modifier = Modifier.testTag("register_username_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
             value = form.email,
             onValueChange = { v -> update { it.copy(email = v) } },
             label = "Email",
-            leadingIcon = Icons.Filled.Email
+            leadingIcon = Icons.Filled.Email,
+            modifier = Modifier.testTag("register_email_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
@@ -207,7 +202,8 @@ private fun StepAkun(
             onValueChange = { v -> update { it.copy(password = v) } },
             label = "Password",
             leadingIcon = Icons.Filled.Lock,
-            isPassword = true
+            isPassword = true,
+            modifier = Modifier.testTag("register_password_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
@@ -215,7 +211,8 @@ private fun StepAkun(
             onValueChange = { v -> update { it.copy(confirmPassword = v) } },
             label = "Confirm Password",
             leadingIcon = Icons.Filled.LockOpen,
-            isPassword = true
+            isPassword = true,
+            modifier = Modifier.testTag("register_confirm_password_field")
         )
     }
 }
@@ -230,22 +227,25 @@ private fun StepPersonal(
             value = form.sidName,
             onValueChange = { v -> update { it.copy(sidName = v) } },
             label = "SID Name",
-            leadingIcon = Icons.Filled.Badge
+            leadingIcon = Icons.Filled.Badge,
+            modifier = Modifier.testTag("register_sidname_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
             value = form.nik,
-            onValueChange = { v -> update { it.copy(nik = v) } },
+            onValueChange = { v -> update { it.copy(nik = v.filter(Char::isDigit).take(16)) } },
             label = "NIK",
             leadingIcon = Icons.Filled.CreditCard,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.testTag("register_nik_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
             value = form.tempatLahir,
             onValueChange = { v -> update { it.copy(tempatLahir = v) } },
             label = "Tempat Lahir",
-            leadingIcon = Icons.Filled.Place
+            leadingIcon = Icons.Filled.Place,
+            modifier = Modifier.testTag("register_tempat_lahir_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppDateTextField(
@@ -275,14 +275,16 @@ private fun StepFinancial(
             value = form.alamat,
             onValueChange = { v -> update { it.copy(alamat = v) } },
             label = "Alamat",
-            leadingIcon = Icons.Filled.Home
+            leadingIcon = Icons.Filled.Home,
+            modifier = Modifier.testTag("register_alamat_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
             value = form.pekerjaan,
             onValueChange = { v -> update { it.copy(pekerjaan = v) } },
             label = "Pekerjaan",
-            leadingIcon = Icons.Filled.Work
+            leadingIcon = Icons.Filled.Work,
+            modifier = Modifier.testTag("register_pekerjaan_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
@@ -290,7 +292,8 @@ private fun StepFinancial(
             onValueChange = { v -> update { it.copy(pendapatan = v) } },
             label = "Pendapatan",
             leadingIcon = Icons.Filled.AttachMoney,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.testTag("register_pendapatan_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
         AppDropdownField(
@@ -303,10 +306,11 @@ private fun StepFinancial(
         Spacer(modifier = Modifier.height(16.dp))
         AppTextField(
             value = form.noRekening,
-            onValueChange = { v -> update { it.copy(noRekening = v) } },
+            onValueChange = { v -> update { it.copy(noRekening = v.filter(Char::isDigit).take(10)) } },
             label = "No. Rekening",
             leadingIcon = Icons.Filled.AccountBalance,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.testTag("register_no_rekening_field")
         )
     }
 }

@@ -22,15 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.project.binar.okariru.core.security.RootChecker
 import com.project.binar.okariru.data.auth.repository.AuthViewModel
 import com.project.binar.okariru.presentation.navigation.ExampleNavHost
+import com.project.binar.okariru.presentation.security.RootedDeviceScreen
 import com.project.binar.okariru.ui.theme.OkariruTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var rootChecker: RootChecker
 
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
@@ -67,13 +73,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             OkariruTheme {
-                val authState by authViewModel.uiState.collectAsStateWithLifecycle()
-                ExampleNavHost(
-                    modifier = Modifier.padding(),
-                    authState = authState,
-                    pendingDeepLink = pendingDeepLink?.data,
-                    onDeepLinkHandled = { pendingDeepLink = null },
-                )
+                if (rootChecker.isDeviceRooted()) {
+                    RootedDeviceScreen(onExit = { finishAffinity() })
+                } else {
+                    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+                    ExampleNavHost(
+                        modifier = Modifier.padding(),
+                        authState = authState,
+                        pendingDeepLink = pendingDeepLink?.data,
+                        onDeepLinkHandled = { pendingDeepLink = null },
+                    )
+                }
             }
         }
     }

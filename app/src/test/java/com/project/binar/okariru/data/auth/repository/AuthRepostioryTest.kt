@@ -44,6 +44,7 @@ private fun authRepostory(
     apiHit = apiHit,
     json = Json,
     dao = mockk(),
+    fcmLocalStore = mockk(relaxed = true),
     ioDispatcher = UnconfinedTestDispatcher(),
     clock = clock,
 )

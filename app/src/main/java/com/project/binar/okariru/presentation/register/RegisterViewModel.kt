@@ -1,5 +1,6 @@
 package com.project.binar.okariru.presentation.register
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.binar.okariru.core.error.CommonFailure
@@ -85,6 +86,19 @@ class RegisterViewModel @Inject constructor(
         _popupState.value = PopupState.Idle
     }
 
+    private fun validateFields(f: RegisterFormState): String? = when {
+        f.userName.length > 100 -> "Username maksimal 100 karakter"
+        f.sidName.length > 100 -> "Nama maksimal 100 karakter"
+        f.email.length > 100 || !Patterns.EMAIL_ADDRESS.matcher(f.email).matches() -> "Format email tidak valid"
+        f.password.length >72 -> "Password maximal 72 karakter"
+        !f.nik.matches(Regex("\\d{16}")) -> "NIK harus 16 digit angka"
+        f.tempatLahir.length > 50 -> "Tempat lahir maksimal 50 karakter"
+        f.alamat.length > 50 -> "Alamat maksimal 50 karakter"
+        f.pekerjaan.length > 50 -> "Pekerjaan maksimal 50 karakter"
+        !f.noRekening.matches(Regex("\\d{10}")) -> "No rekening harus 10 digit angka"
+        else -> null
+    }
+
     fun register() {
         if (_uiState.value == RegisterUiState.Loading) return
 
@@ -118,6 +132,11 @@ class RegisterViewModel @Inject constructor(
             return
         }
 
+        validateFields(form)?.let {
+            _uiState.value = RegisterUiState.Error(it)
+            return
+        }
+
         val pendapatanInt = form.pendapatan.toIntOrNull()
         if (form.pendapatan.isNotBlank() && pendapatanInt == null) {
             _uiState.value = RegisterUiState.Error("Pendapatan harus berupa angka")
@@ -135,6 +154,8 @@ class RegisterViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = RegisterUiState.Loading
+
+            
 
             val request = RegisterRequest(
                 userName = form.userName,
@@ -170,7 +191,7 @@ class RegisterViewModel @Inject constructor(
                     _uiState.value = RegisterUiState.Error(message)
                     _popupState.value = PopupState.Show(
                         isSuccess = false,
-                        message = "Register Gagal! Silahkan coba kembali."
+                        message = message
                     )
                 }
             }
