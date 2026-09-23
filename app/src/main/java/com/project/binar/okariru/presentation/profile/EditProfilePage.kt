@@ -345,7 +345,7 @@ private fun FieldSpacer() {
     Spacer(modifier = Modifier.height(Spacing.md))
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1200)
 @Composable
 fun editProfilePreview() {
     OkariruTheme {

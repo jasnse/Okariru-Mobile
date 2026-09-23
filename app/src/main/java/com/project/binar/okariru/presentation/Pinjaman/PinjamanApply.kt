@@ -719,40 +719,103 @@ private fun StepSimulasiPreview() {
         LoanTypeOption(
             id = 1,
             title = "Pinjaman Kilat",
-            description = "Super cepat",
+            description = "Proses persetujuan cepat dengan bunga ringan",
             bunga = 1.0,
             biayaLainnya = 10000.0
         )
     )
+
     var formState by remember {
         mutableStateOf(
             PinjamanFormState(
                 selectedLoanTypeId = 1,
                 selectedLoanTypeName = "Pinjaman Kilat",
-                nominal = 5000000,
-                tenor = "12 Bulan"
+                nominal = 5_000_000,
+                tenor = "12 Bulan",
+                sisaPlafond = 10_000_000L
             )
         )
     }
+
+    val steps = listOf("Tipe Pinjaman", "Simulasi", "Dokumen")
+
     OkariruTheme {
-        StepSimulasi(
-            form = formState,
-            update = { updateBlock -> formState = updateBlock(formState) },
-            loanTypes = dummyLoanTypes
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = Spacing.xl, vertical = Spacing.lg)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Header ringkas untuk preview
+            Text(
+                text = "Pengajuan Pinjaman",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            // Step Indicator (Progress Bar) di posisi Step 1 (Simulasi)
+            StepIndicator(
+                steps = steps,
+                currentStep = 1,
+                onStepClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.xl))
+
+            // Konten Simulasi
+            StepSimulasi(
+                form = formState,
+                loanTypes = dummyLoanTypes,
+                update = { updateBlock -> formState = updateBlock(formState) }
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun StepDokumenPreview() {
+    val steps = listOf("Tipe Pinjaman", "Simulasi", "Dokumen")
+
     OkariruTheme {
-        StepDokumen(
-            documents = listOf(
-                DocumentUploadItem(Icons.Filled.Badge, "KTP", isRequired = true),
-                DocumentUploadItem(Icons.Filled.Payments, "Slip Gaji", isRequired = true),
-            ),
-            onDocumentPicked = { _, _, _ -> }
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = Spacing.xl, vertical = Spacing.lg)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Header ringkas untuk preview
+            Text(
+                text = "Pengajuan Pinjaman",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            // Step Indicator (Progress Bar) di posisi Step 2 (Dokumen)
+            StepIndicator(
+                steps = steps,
+                currentStep = 2,
+                onStepClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.xl))
+
+            // Konten Step Dokumen
+            StepDokumen(
+                documents = listOf(
+                    DocumentUploadItem(Icons.Filled.Badge, "KTP", isRequired = true),
+                    DocumentUploadItem(Icons.Filled.Payments, "Slip Gaji", isRequired = true),
+                ),
+                onDocumentPicked = { _, _, _ -> }
+            )
+        }
     }
 }

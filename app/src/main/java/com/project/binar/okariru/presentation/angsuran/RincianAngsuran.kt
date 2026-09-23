@@ -391,7 +391,7 @@ fun RincianAngsuranContent(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1200)
 @Composable
 private fun RincianAngsuranContentPreview() {
     val mockAngsuran = listOf(

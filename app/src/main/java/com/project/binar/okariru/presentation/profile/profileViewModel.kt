@@ -94,9 +94,20 @@ class ProfileViewModel @Inject constructor(
         sidName: String, alamat: String, pekerjaan: String, pendapatanInput: String,
         maritalStatus: String, noRekening: String, tempatLahir: String, tanggalLahir: String, gender: String
     ) {
+        val allFields = listOf(
+            sidName, alamat, pekerjaan, pendapatanInput,
+            maritalStatus, noRekening, tempatLahir, tanggalLahir, gender
+        )
+        if (allFields.any { it.isBlank() }) {
+            _uiState.update { it.copy(errorMessage = "Semua field wajib diisi") }
+            _popupState.value = PopupState.Show(isSuccess = false, message = "Semua field wajib diisi")
+            return
+        }
+
         val pendapatan = pendapatanInput.toIntOrNull()
         if (pendapatan == null) {
             _uiState.update { it.copy(errorMessage = "Pendapatan harus berupa angka") }
+            _popupState.value = PopupState.Show(isSuccess = false, message = "Pendapatan harus berupa angka")
             return
         }
 

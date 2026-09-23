@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,9 +30,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.binar.okariru.R
+import com.project.binar.okariru.ui.theme.OkariruTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -114,6 +117,17 @@ fun SplashContent(
                     fontWeight = FontWeight.Medium
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SplashContentPreview() {
+    // Sesuaikan nama Theme project Anda jika ada (misal: OkariruTheme)
+    OkariruTheme {
+        Surface {
+            SplashContent()
         }
     }
 }
