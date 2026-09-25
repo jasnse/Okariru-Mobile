@@ -14,7 +14,7 @@ class RootChecker(private val context: Context) {
     fun isDeviceRooted(): Boolean {
         return checkKnownRootAppsInstalled() ||
             checkSuBinaryExists() ||
-            checkSuCommandExecutable() ||
+//            checkSuCommandExecutable() ||
             checkSystemPartitionWritable()
     }
 
@@ -22,16 +22,16 @@ class RootChecker(private val context: Context) {
         return KNOWN_SU_PATHS.any { path -> File(path).exists() }
     }
 
-    private fun checkSuCommandExecutable(): Boolean {
-        return try {
-            val process = ProcessBuilder("which", "su").redirectErrorStream(true).start()
-            val output = process.inputStream.bufferedReader().readLine()
-            val exitCode = process.waitFor()
-            exitCode == 0 && !output.isNullOrBlank()
-        } catch (_: Exception) {
-            false
-        }
-    }
+//    private fun checkSuCommandExecutable(): Boolean {
+//        return try {
+//            val process = ProcessBuilder("which", "su").redirectErrorStream(true).start()
+//            val output = process.inputStream.bufferedReader().readLine()
+//            val exitCode = process.waitFor()
+//            exitCode == 0 && !output.isNullOrBlank()
+//        } catch (_: Exception) {
+//            false
+//        }
+//    }
 
     private fun checkSystemPartitionWritable(): Boolean {
         return WRITABLE_PATHS_TO_CHECK.any { path ->
