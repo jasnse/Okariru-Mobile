@@ -3,7 +3,6 @@ package com.project.binar.okariru.presentation.angsuran
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,8 +29,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,11 +48,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.binar.okariru.data.angsuran.dto.AngsuranDto
 import com.project.binar.okariru.presentation.home.formatRupiah
 import com.project.binar.okariru.presentation.shared.component.AngsuranRow
+import com.project.binar.okariru.presentation.shared.component.AppCurrencyTextField
 import com.project.binar.okariru.presentation.shared.component.StatusPopup
+import com.project.binar.okariru.presentation.shared.component.formatNumberWithComma
 import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.ui.theme.ColorOnPrimary
 import com.project.binar.okariru.ui.theme.ColorOnSurfaceVariant
-import com.project.binar.okariru.ui.theme.ColorOutline
 import com.project.binar.okariru.ui.theme.ColorPrimary
 import com.project.binar.okariru.ui.theme.OkariruTheme
 import com.project.binar.okariru.ui.theme.Radius
@@ -339,17 +336,11 @@ fun RincianAngsuranContent(
 
                 Text(text = "Nominal Bayar", fontSize = 12.sp, color = ColorOnSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = inputBayar,
-                    onValueChange = { input -> onInputBayarChange(input.filter { it.isDigit() }) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(Radius.md),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorPrimary,
-                        unfocusedBorderColor = ColorOutline,
-                    )
+                AppCurrencyTextField(
+                    value = formatNumberWithComma(inputBayar),
+                    onValueChange = onInputBayarChange,
+                    label = "",
+                    leadingIcon = Icons.Filled.Payments
                 )
 
                 Spacer(modifier = Modifier.height(Spacing.lg))

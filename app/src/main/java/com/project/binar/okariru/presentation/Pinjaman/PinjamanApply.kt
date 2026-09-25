@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -61,7 +60,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -94,6 +92,8 @@ import android.content.Context
 import android.provider.OpenableColumns
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.FileProvider
+import com.project.binar.okariru.presentation.shared.component.AppCurrencyTextField
+import com.project.binar.okariru.presentation.shared.component.formatNumberWithComma
 import java.io.File
 import java.math.BigDecimal
 
@@ -414,12 +414,11 @@ private fun StepSimulasi(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        AppTextField(
-            value = if (form.nominal == 0) "" else form.nominal.toString(),
-            onValueChange = { v -> update { it.copy(nominal = v.toIntOrNull() ?: 0) } },
+        AppCurrencyTextField(
+            value = formatNumberWithComma(if (form.nominal == 0) "" else form.nominal.toString()),
+            onValueChange = { rawValue -> update { it.copy(nominal = rawValue.toIntOrNull() ?: 0) } },
             label = "Nominal Pinjaman",
-            leadingIcon = Icons.Filled.AttachMoney,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            leadingIcon = Icons.Filled.AttachMoney
         )
 
         val maxNominal = form.sisaPlafond ?: 0L

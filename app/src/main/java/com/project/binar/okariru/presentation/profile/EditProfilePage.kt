@@ -59,9 +59,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.binar.okariru.data.auth.dto.CustomerDTO
 import com.project.binar.okariru.data.auth.repository.AuthViewModel
+import com.project.binar.okariru.presentation.shared.component.AppCurrencyTextField
 import com.project.binar.okariru.presentation.shared.component.AppDateTextField
 import com.project.binar.okariru.presentation.shared.component.AppDropdownField
 import com.project.binar.okariru.presentation.shared.component.AppTextField
+import com.project.binar.okariru.presentation.shared.component.formatNumberWithComma
 import com.project.binar.okariru.presentation.shared.component.StatusPopup
 import com.project.binar.okariru.presentation.shared.sharedActivityViewModel
 import com.project.binar.okariru.ui.theme.ColorOnSurfaceVariant
@@ -233,12 +235,11 @@ fun EditProfileContent(
                         leadingIcon = Icons.Filled.Work
                     )
                     FieldSpacer()
-                    AppTextField(
-                        value = pendapatan,
+                    AppCurrencyTextField(
+                        value = formatNumberWithComma(pendapatan),
                         onValueChange = { pendapatan = it },
                         label = "Pendapatan",
-                        leadingIcon = Icons.Filled.AttachMoney,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        leadingIcon = Icons.Filled.AttachMoney
                     )
                     FieldSpacer()
 //                    AppTextField(

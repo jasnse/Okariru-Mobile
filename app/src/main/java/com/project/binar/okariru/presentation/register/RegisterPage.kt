@@ -27,10 +27,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.binar.okariru.data.auth.repository.AuthViewModel
 import com.project.binar.okariru.presentation.shared.component.AppButton
 import com.project.binar.okariru.presentation.shared.component.AppButtonVariant
+import com.project.binar.okariru.presentation.shared.component.AppCurrencyTextField
 import com.project.binar.okariru.presentation.shared.component.AppDateTextField
 import com.project.binar.okariru.presentation.shared.component.AppDropdownField
 import com.project.binar.okariru.presentation.shared.component.AppTextField
 import com.project.binar.okariru.presentation.shared.component.StatusPopup
+import com.project.binar.okariru.presentation.shared.component.formatNumberWithComma
 import com.project.binar.okariru.ui.theme.OkariruTheme
 
 
@@ -287,12 +289,11 @@ private fun StepFinancial(
             modifier = Modifier.testTag("register_pekerjaan_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
-        AppTextField(
-            value = form.pendapatan,
+        AppCurrencyTextField(
+            value = formatNumberWithComma(form.pendapatan),
             onValueChange = { v -> update { it.copy(pendapatan = v) } },
             label = "Pendapatan",
             leadingIcon = Icons.Filled.AttachMoney,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.testTag("register_pendapatan_field")
         )
         Spacer(modifier = Modifier.height(16.dp))
