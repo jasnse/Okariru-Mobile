@@ -222,10 +222,10 @@ private fun buildProcessSteps(item: ListPinjamanDto): List<ProcessStep> {
     val status = item.statusPengajuan?.lowercase()
 
     val terkirimDone = item.tanggalPengajuan != null
-    val reviewDone = item.tanggalReview != null || status in listOf("direview", "disetujui", "ditolak")
-    val approvalDone = status in listOf("dicairkan","disetujui", "ditolak")
+    val reviewDone = item.tanggalReview != null || status in listOf("direview", "disetujui", "ditolak", "dicairkan", "lunas")
+    val approvalDone = status in listOf("dicairkan", "lunas", "disetujui", "ditolak")
     val approvalCurrent = status == "direview"
-    val pencairanDone = status == "dicairkan"
+    val pencairanDone = status in listOf("dicairkan", "lunas")
 
     return listOf(
         ProcessStep(

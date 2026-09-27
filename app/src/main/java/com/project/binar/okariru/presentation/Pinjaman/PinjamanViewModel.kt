@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Payments
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.binar.okariru.core.error.CommonFailure
 import com.project.binar.okariru.core.network.AppResult
 import com.project.binar.okariru.data.pinjaman.dto.PinjamanTransactionRequestDto
 import com.project.binar.okariru.data.pinjaman.repository.PinjamanRepository
@@ -99,10 +100,6 @@ class PinjamanViewModel @Inject constructor(
         }
     }
 
-    fun goToStep(index: Int) {
-        if (index in steps.indices) _currentStep.value = index
-    }
-
     fun nextStep() {
         if (_currentStep.value < steps.lastIndex) _currentStep.value++
     }
@@ -130,6 +127,12 @@ class PinjamanViewModel @Inject constructor(
         DocumentUploadItem(Icons.Filled.AccountBalance, "Buku Tabungan / Rekening", isRequired = true),
         DocumentUploadItem(Icons.Filled.Description, "Dokumen Lainnya", isRequired = true),
     )
+
+    // dipanggil ulang tiap kali user masuk halaman pengajuan, supaya jenis pinjaman
+    // yang baru diubah di FE master data langsung kepakai tanpa perlu clear storage / restart app
+    fun refreshLoanTypes() {
+        loadLoanTypes()
+    }
 
     private fun loadLoanTypes() {
         viewModelScope.launch {
@@ -249,10 +252,16 @@ class PinjamanViewModel @Inject constructor(
                     }
                 }
                 is AppResult.Failure -> {
-                    _uiState.value = PinjamanUiState.Error("Pengajuan pinjaman gagal")
+                    val message = when (val failure = result.failure) {
+                        is CommonFailure.Unauthorized -> "Sesi tidak valid"
+                        is CommonFailure.Network -> "Tidak dapat terhubung ke server"
+                        is CommonFailure.ApiError -> failure.details.firstOrNull() ?: "Pengajuan pinjaman gagal"
+                        else -> "Terjadi kesalahan, silakan coba lagi"
+                    }
+                    _uiState.value = PinjamanUiState.Error(message)
                     _popupState.value = PopupState.Show(
                         isSuccess = false,
-                        message = "Pengajuan pinjaman gagal. Silakan coba lagi."
+                        message = message
                     )
                 }
             }

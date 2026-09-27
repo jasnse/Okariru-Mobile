@@ -49,6 +49,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -170,6 +171,12 @@ fun PengajuanPinjamanPage(
         onDispose { viewModel.resetForm() }
     }
 
+    // reload jenis pinjaman tiap masuk halaman ini, supaya perubahan master data pinjaman
+    // di FE langsung kepakai tanpa harus clear storage / restart app
+    LaunchedEffect(Unit) {
+        viewModel.refreshLoanTypes()
+    }
+
 
 
     PengajuanPinjamanContent(
@@ -181,7 +188,6 @@ fun PengajuanPinjamanPage(
         isLoadingLoanTypes = isLoadingLoanTypes,
         uiState = uiState,
         onUpdateForm = viewModel::updateForm,
-        onGoToStep = viewModel::goToStep,
         onPreviousStep = viewModel::previousStep,
         onNextStep = viewModel::nextStep,
         onSubmit = viewModel::submitForm,
@@ -215,7 +221,6 @@ fun PengajuanPinjamanContent(
     isLoadingLoanTypes: Boolean = false,
     uiState: PinjamanUiState = PinjamanUiState.Idle,
     onUpdateForm: (((PinjamanFormState) -> PinjamanFormState)) -> Unit = {},
-    onGoToStep: (Int) -> Unit = {},
     onPreviousStep: () -> Unit = {},
     onNextStep: () -> Unit = {},
     onSubmit: () -> Unit = {},
@@ -281,7 +286,6 @@ fun PengajuanPinjamanContent(
         StepIndicator(
             steps = steps,
             currentStep = currentStep,
-            onStepClick = onGoToStep
         )
 
         Spacer(modifier = Modifier.height(Spacing.xl))
@@ -760,7 +764,6 @@ private fun StepSimulasiPreview() {
             StepIndicator(
                 steps = steps,
                 currentStep = 1,
-                onStepClick = {}
             )
 
             Spacer(modifier = Modifier.height(Spacing.xl))
@@ -802,7 +805,6 @@ private fun StepDokumenPreview() {
             StepIndicator(
                 steps = steps,
                 currentStep = 2,
-                onStepClick = {}
             )
 
             Spacer(modifier = Modifier.height(Spacing.xl))

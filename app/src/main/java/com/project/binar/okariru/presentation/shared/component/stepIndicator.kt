@@ -2,7 +2,6 @@ package com.project.binar.okariru.presentation.shared.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,6 @@ import com.project.binar.okariru.ui.theme.ColorPrimary
 fun StepIndicator(
     steps: List<String>,
     currentStep: Int,
-    onStepClick: (Int) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
         steps.forEachIndexed { index, label ->
@@ -43,9 +41,9 @@ fun StepIndicator(
             val isCurrent = index == currentStep
             val activeColor = if (isDone || isCurrent) ColorPrimary else ColorOutline
 
+            // navigasi antar step murni lewat tombol Lanjut/Kembali, indikator ini display-only
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { onStepClick(index) }
             ) {
                 Box(
                     modifier = Modifier
