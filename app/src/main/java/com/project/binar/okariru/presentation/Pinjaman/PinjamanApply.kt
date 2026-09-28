@@ -428,7 +428,7 @@ private fun StepSimulasi(
         val maxNominal = form.sisaPlafond ?: 0L
         val nominalHint = when {
             form.nominal <= 0 -> "Nominal pinjaman wajib diisi"
-            form.nominal < 1_000 -> "Minimal pengajuan Rp 1.000"
+            form.nominal < 500_000 -> "Minimal pengajuan Rp 500.000"
             maxNominal > 0 && form.nominal > maxNominal -> "Melebihi sisa plafon (${formatRupiah(maxNominal)})"
             else -> null
         }

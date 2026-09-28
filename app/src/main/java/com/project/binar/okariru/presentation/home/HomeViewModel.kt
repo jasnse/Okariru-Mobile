@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val userName: String = "Friend",
     val SisaPlafond: Long? = null,
     val errorMessage: String? = null,
@@ -114,11 +115,17 @@ class HomeViewModel @Inject constructor(
     //ini hit ke API
     fun refresh() {
         viewModelScope.launch {
-            val userId = authRepository.observeSession().firstOrNull()?.user?.id ?: return@launch
+            _uiState.update { it.copy(isRefreshing = true) }   // mulai
+            val userId = authRepository.observeSession().firstOrNull()?.user?.id
+            if (userId == null) {
+                _uiState.update { it.copy(isRefreshing = false) }
+                return@launch
+            }
             if (plafondRepository.refreshPlafond(userId) is AppResult.Failure) {
                 _uiState.update { it.copy(errorMessage = "Gagal memuat data plafon") }
             }
             authRepository.refreshCustomer(userId)
+            _uiState.update { it.copy(isRefreshing = false) }   // selesai
         }
     }
 }

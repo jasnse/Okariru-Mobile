@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -49,6 +50,7 @@ fun HomePage(
         onProfileClick = onProfileClick,
         onNotificationClick = onNotificationClick,
         onStatusPinjamanClick = onStatusPinjamanClick,
+        onRefresh = viewModel::refresh,
     )
 }
 
@@ -63,6 +65,7 @@ private fun HomeContent(
     onProfileClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     onStatusPinjamanClick: () -> Unit = {},
+    onRefresh: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -95,6 +98,11 @@ private fun HomeContent(
 
             }
 
+            PullToRefreshBox(
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = onRefresh,
+                modifier = Modifier.fillMaxSize(),
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -284,6 +292,7 @@ private fun HomeContent(
 
                 // Ruang kosong supaya konten terakhir tidak tertutup kartu navigasi mengambang
                 Spacer(modifier = Modifier.height(96.dp))
+            }
             }
         }
 
