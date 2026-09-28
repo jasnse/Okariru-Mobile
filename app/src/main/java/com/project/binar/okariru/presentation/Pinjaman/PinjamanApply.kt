@@ -229,7 +229,7 @@ fun PengajuanPinjamanContent(
     onDocumentPicked: (index: Int, uri: Uri, fileName: String) -> Unit = { _, _, _ -> },
 ) {
     val isLoanTypeSelected = form.selectedLoanTypeId != 0
-    val minNominal = 1_000
+    val minNominal = 500_000
     val maxNominal = form.sisaPlafond ?: 0L
     val isNominalFilled = form.nominal > 0
     val isNominalTooLow = form.nominal in 1 until  minNominal
